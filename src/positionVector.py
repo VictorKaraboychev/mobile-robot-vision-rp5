@@ -78,7 +78,7 @@ def main():
         position_vectors = get_position_vectors(frame)
 
         if position_vectors:
-            print(f"Position Vectors: {position_vectors}")
+            print(f"Position Vectors: {str(position_vectors)}")
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
@@ -86,7 +86,7 @@ def main():
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
+        
     cap.release()
     cv2.destroyAllWindows()
 
