@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+from i2c_comms import I2CComms
 
 def get_trajectory_vector(image):
     """
@@ -51,6 +52,7 @@ def get_trajectory_vector(image):
 
             # Calculate the angle relative to the forward direction (0 degrees)
             angle = math.degrees(math.atan2(dx, dy))
+            angle = math.floor(angle)
 
             # Visualize the path and trajectory vector on the frame
             cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
@@ -65,6 +67,7 @@ def get_trajectory_vector(image):
 def main():
     # Open the camera feed
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
+    i2c = I2CComms(1, 0x8)
 
     while True:
         ret, frame = cap.read()
@@ -79,7 +82,13 @@ def main():
 
         if trajectory:
             dx, dy, angle = trajectory
-            print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle:.2f} degrees")
+            dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
+            dy = math.floor(np.interp(dy, [0, 480], [0,255]))
+            angle = math.floor(np.interp(angle, [0, 360], [0,255]))
+            
+            print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
+            
+            i2c.write_block(0x00, [dx, dy, angle])
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
