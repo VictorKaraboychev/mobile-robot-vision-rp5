@@ -50,8 +50,8 @@ def get_trajectory_vector(image):
     # Find contours in the mask
     contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    # if contours_blue:
-    #     return True
+    if contours_blue:
+        return True
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
@@ -71,13 +71,13 @@ def get_trajectory_vector(image):
             dy = bottom_center[1] - cy  # Vertical distance to the path end
 
             # Calculate the angle relative to the forward direction (0 degrees)
-            angle = math.degrees(math.atan2(dx, dy))
+            angle = math.degrees(math.atan2(x=dx, y=dy))
             angle = math.floor(angle)
 
             # Visualize the path and trajectory vector on the frame
-            cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
-            cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
-            cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+            # cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
+            # cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
+            # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
             return dx, dy, angle
 
@@ -87,7 +87,7 @@ def get_trajectory_vector(image):
 def main():
     # Open the camera feed
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
-    i2c = I2CComms(1, 0x8)
+    i2c = I2CComms(1, 0x08)
 
     while True:
         ret, frame = cap.read()
@@ -100,7 +100,10 @@ def main():
         # Get trajectory vector
         trajectory = get_trajectory_vector(frame)
 
-        if trajectory:
+        if trajectory == True:
+            print("Arrived ")
+            i2c.write_block(0x01, [True], '=?')
+        elif trajectory:
             dx, dy, angle = trajectory
             # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
             # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
@@ -108,13 +111,10 @@ def main():
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
-            i2c.write_block(0x00, [dx, dy, angle], '=fff')
-        # elif Arrived:
-        #     print("Arrived ")
-        #     i2c.write_block(0x01, [Arrived], '=?')
-        # else:
-        #     print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
-        #     i2c.write_block(0x02, [0, 0, 0], '=hhh')
+            i2c.write_block(0x00, [dx, dy, angle], '=fff')            
+        else:
+            print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
+            i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         # cv2.imshow('Frame', frame)
