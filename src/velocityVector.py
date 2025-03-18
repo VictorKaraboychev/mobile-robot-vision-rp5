@@ -98,9 +98,9 @@ def main():
         frame = cv2.resize(frame, (640, 480))
 
         # Get trajectory vector
-        Arrived, trajectory = get_trajectory_vector(frame)
+        trajectory = get_trajectory_vector(frame)
 
-        if not Arrived and trajectory:
+        if trajectory:
             dx, dy, angle = trajectory
             dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
             dy = math.floor(np.interp(dy, [0, 480], [0,255]))
@@ -109,12 +109,12 @@ def main():
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
             i2c.write_block(0x00, [dx, dy, angle], '=fff')
-        elif Arrived:
-            print("Arrived ")
-            i2c.write_block(0x01, [Arrived], '=?')
-        else:
-            print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
-            i2c.write_block(0x02, [0, 0, 0], '=hhh')
+        # elif Arrived:
+        #     print("Arrived ")
+        #     i2c.write_block(0x01, [Arrived], '=?')
+        # else:
+        #     print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
+        #     i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
