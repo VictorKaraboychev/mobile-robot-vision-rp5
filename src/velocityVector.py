@@ -18,23 +18,43 @@ def get_trajectory_vector(image):
     upper_red1 = np.array([10, 255, 255])
     lower_red2 = np.array([170, 50, 50])
     upper_red2 = np.array([180, 255, 255])
+    
+    # Define the HSV range for detecting blue color
+    lower_blue1 = np.array([100, 150, 50])
+    upper_blue1 = np.array([120, 255, 255])
+    lower_blue2 = np.array([120, 150, 50])
+    upper_blue2 = np.array([140, 255, 255])
 
     # Create masks for the red color range
-    mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
-    mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
-    mask = cv2.bitwise_or(mask1, mask2)
+    mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
+    mask_red = cv2.bitwise_or(mask_r1, mask_r2)
+    
+    mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
+    mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
+    mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_OPEN, kernel)
+    mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_CLOSE, kernel)
+    
+    # Apply morphological operations to clean up the mask
+    kernel = np.ones((5, 5), np.uint8)
+    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
+    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
 
     # Find contours in the mask
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    if contours:
+    contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Find contours in the mask
+    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    if contours_blue:
+        return True
+    if contours_red:
         # Find the largest contour (assumed to be the red path)
-        largest_contour = max(contours, key=cv2.contourArea)
+        largest_contour = max(contours_red, key=cv2.contourArea)
 
         # Calculate the center of the largest contour
         moments = cv2.moments(largest_contour)
@@ -59,9 +79,9 @@ def get_trajectory_vector(image):
             cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
             cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-            return dx, dy, angle
+            return False, dx, dy, angle
 
-    return None  # Return None if no path is detected
+    return False, None  # Return None if no path is detected
 
 # Main loop for processing video feed
 def main():
@@ -78,9 +98,9 @@ def main():
         frame = cv2.resize(frame, (640, 480))
 
         # Get trajectory vector
-        trajectory = get_trajectory_vector(frame)
+        Arrived, trajectory = get_trajectory_vector(frame)
 
-        if trajectory:
+        if not Arrived and trajectory:
             dx, dy, angle = trajectory
             dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
             dy = math.floor(np.interp(dy, [0, 480], [0,255]))
@@ -88,7 +108,13 @@ def main():
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
-            i2c.write_block(0x00, [dx, dy, angle])
+            i2c.write_block(0x00, [dx, dy, angle], '=fff')
+        elif Arrived:
+            print("Arrived ")
+            i2c.write_block(0x01, [Arrived], '=?')
+        else:
+            print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
+            i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)

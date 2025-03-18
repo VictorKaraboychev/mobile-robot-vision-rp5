@@ -1,4 +1,5 @@
 from smbus2 import SMBus
+import struct
 
 class I2CComms:
     def __init__(self, bus_num, device_addr):
@@ -18,9 +19,10 @@ class I2CComms:
     def read_byte(self):
         return self.bus.read_byte(self.device_addr)
 
-    def write_block(self, register, data):
+    def write_block(self, register, data, format_string):
         try:
-            self.bus.write_i2c_block_data(self.device_addr, register, data)
+            struc = struct.pack(format_string, *data)
+            self.bus.write_i2c_block_data(self.device_addr, register, list(struc))
         except Exception as e:
             print(f"Error: {e}")
 
