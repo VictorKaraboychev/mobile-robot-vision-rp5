@@ -38,7 +38,7 @@ class I2CComms:
             self.write_block(5, [1,2,3,4,5])
 
 
-i2c = I2CComms(1, 0x8)
+i2c = I2CComms(1, 0x08)
 
 while True:
     dx = 1.1
