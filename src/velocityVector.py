@@ -71,7 +71,7 @@ def get_trajectory_vector(image):
             dy = bottom_center[1] - cy  # Vertical distance to the path end
 
             # Calculate the angle relative to the forward direction (0 degrees)
-            angle = math.degrees(math.atan2(x=dx, y=dy))
+            angle = math.degrees(math.atan2(dx, dy))
             angle = math.floor(angle)
 
             # Visualize the path and trajectory vector on the frame
