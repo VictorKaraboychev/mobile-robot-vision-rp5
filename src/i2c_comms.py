@@ -1,3 +1,4 @@
+from time import sleep
 from smbus2 import SMBus
 import struct
 
@@ -51,5 +52,6 @@ while True:
     
     print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
-    i2c.write_block(0x00, [dx, dy, angle], '=fff')
+    i2c.write_block(0x00, [True], '=?')
+    sleep(1)
     
