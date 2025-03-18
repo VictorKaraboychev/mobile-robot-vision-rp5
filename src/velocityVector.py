@@ -50,8 +50,8 @@ def get_trajectory_vector(image):
     # Find contours in the mask
     contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    if contours_blue:
-        return True
+    # if contours_blue:
+    #     return True
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
@@ -79,9 +79,9 @@ def get_trajectory_vector(image):
             cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
             cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-            return False, dx, dy, angle
+            return dx, dy, angle
 
-    return False, None  # Return None if no path is detected
+    return None  # Return None if no path is detected
 
 # Main loop for processing video feed
 def main():
@@ -102,9 +102,9 @@ def main():
 
         if trajectory:
             dx, dy, angle = trajectory
-            dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
-            dy = math.floor(np.interp(dy, [0, 480], [0,255]))
-            angle = math.floor(np.interp(angle, [0, 360], [0,255]))
+            # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
+            # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
+            # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
