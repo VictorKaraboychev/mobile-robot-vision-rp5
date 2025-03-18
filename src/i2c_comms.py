@@ -52,6 +52,6 @@ while True:
     
     print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
-    i2c.write_block(0x00, [True], '=?')
+    i2c.write_block(0x00, [dx, dy, angle], '=fff')
     sleep(1)
     
