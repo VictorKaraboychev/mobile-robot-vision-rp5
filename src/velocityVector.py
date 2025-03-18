@@ -117,14 +117,14 @@ def main():
         #     i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
-        cv2.imshow('Frame', frame)
+        # cv2.imshow('Frame', frame)
 
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
