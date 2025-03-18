@@ -36,3 +36,20 @@ class I2CComms:
     def test(self):
         for x in range(1,5):
             self.write_block(5, [1,2,3,4,5])
+
+
+i2c = I2CComms(1, 0x8)
+
+while True:
+    dx = 1.1
+    dy = 2.1
+    angle = 90.1
+
+    # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
+    # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
+    # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
+    
+    print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
+    
+    i2c.write_block(0x00, [dx, dy, angle], '=fff')
+    
