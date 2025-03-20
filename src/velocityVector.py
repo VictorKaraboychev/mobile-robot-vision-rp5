@@ -99,13 +99,13 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
-    i2c.write_block(0x05, [True], '=?') #ready to start
+    # i2c.write_block(0x05, [True], '=?') #ready to start
     
-    while True:
-        resume = i2c.read_block(0x06, 1)
-        if resume:
-            break
-        sleep(0.01)
+    # while True:
+    #     resume = i2c.read_block(0x06, 1)
+    #     if resume:
+    #         break
+    #     sleep(0.01)
 
     while True:
         ret, frame = cap.read()
