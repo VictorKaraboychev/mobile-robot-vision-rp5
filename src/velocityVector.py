@@ -1,7 +1,16 @@
 import cv2
 import numpy as np
 import math
+from time import sleep
 from i2c_comms import I2CComms
+
+YPM = 10  # Replace with your desired constant
+angle = np.radians(27.5)  # Convert degrees to radians
+
+Y_PIXEL_TO_MM = np.array([i * YPM * np.sin(angle) for i in range(480)])
+
+X_PIXEL_TO_MM = 10  # Replace with your desired constant
+
 
 def get_trajectory_vector(image):
     """
@@ -88,6 +97,14 @@ def main():
     # Open the camera feed
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
+    
+    i2c.write_block(0x05, [True], '=?') #ready to start
+    
+    while True:
+        resume = i2c.read_block(0x06, 1)
+        if resume:
+            break
+        sleep(0.01)
 
     while True:
         ret, frame = cap.read()
@@ -103,11 +120,15 @@ def main():
         if trajectory == True:
             print("Arrived ")
             i2c.write_block(0x01, [True], '=?')
+            while True:
+                resume = i2c.read_block(0x06, 1)
+                if resume:
+                    break
+                sleep(0.01)
         elif trajectory:
             dx, dy, angle = trajectory
-            # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
-            # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
-            # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
+            dx = dx*X_PIXEL_TO_MM
+            dy = Y_PIXEL_TO_MM[dy]
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
@@ -122,6 +143,7 @@ def main():
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+        sleep(0.01)
 
     cap.release()
     # cv2.destroyAllWindows()

@@ -24,12 +24,13 @@ class I2CComms:
         try:
             struc = struct.pack(format_string, *data)
             self.bus.write_i2c_block_data(self.device_addr, register, list(struc))
+            print(f"Send Data: {data} to command reg: {register}")
         except Exception as e:
             print(f"Error: {e}")
 
 
-    def read_block(self, register):
-        return self.bus.read_i2c_block_data(self.device_addr)
+    def read_block(self, register, number_of_values):
+        return self.bus.read_i2c_block_data(self.device_addr, register, number_of_values)
 
     def close(self):
         self.bus.close()
