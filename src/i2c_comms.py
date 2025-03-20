@@ -17,7 +17,7 @@ class I2CComms:
     def write_byte(self, value):
         self.bus.write_byte(self.device_addr, value)
 
-    def read_byte(self):
+    def read_byte(self, number_of_bytes):
         return self.bus.read_byte(self.device_addr)
 
     def write_block(self, register, data, format_string):
@@ -40,19 +40,20 @@ class I2CComms:
             self.write_block(5, [1,2,3,4,5])
 
 
-# i2c = I2CComms(1, 0x08)
+i2c = I2CComms(1, 0x08)
 
-# while True:
-#     dx = 1.1
-#     dy = 2.1
-#     angle = 90.1
+while True:
+    dx = 1.1
+    dy = 2.1
+    angle = 90.1
 
-#     # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
-#     # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
-#     # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
+    # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
+    # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
+    # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
     
-#     print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
+    # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
-#     i2c.write_block(0x00, [dx, dy, angle], '=fff')
-#     sleep(1)
+    val = i2c.read_byte(1)
+    print("Byte: {val}")
+    sleep(1)
     
