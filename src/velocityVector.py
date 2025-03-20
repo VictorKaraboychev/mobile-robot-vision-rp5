@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import math
 from time import sleep
-# from i2c_comms import I2CComms
+from i2c_comms import I2CComms
 
 angle35 = np.radians(35)  # Convert degrees to radians
 angle1175 = np.radians(117.5)
@@ -118,15 +118,15 @@ def main():
         # Get trajectory vector
         trajectory = get_trajectory_vector(frame)
 
-        if trajectory == True:
-            print("Arrived ")
-            i2c.write_block(0x01, [True], '=?')
-            while True:
-                resume = i2c.read_block(0x06, 1)
-                if resume:
-                    break
-                sleep(0.01)
-        elif trajectory:
+        # if trajectory == True:
+        #     print("Arrived ")
+        #     i2c.write_block(0x01, [True], '=?')
+        #     while True:
+        #         resume = i2c.read_block(0x01, 1)
+        #         if resume:
+        #             break
+        #         sleep(0.01)
+        if trajectory:
             dx, dy, angle = trajectory
             dx = dx*X_PIXEL_TO_MM
             dy = Y_PIXEL_TO_MM[dy]
