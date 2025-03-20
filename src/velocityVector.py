@@ -2,12 +2,13 @@ import cv2
 import numpy as np
 import math
 from time import sleep
-from i2c_comms import I2CComms
+# from i2c_comms import I2CComms
 
-YPM = 10  # Replace with your desired constant
-angle = np.radians(27.5)  # Convert degrees to radians
-
-Y_PIXEL_TO_MM = np.array([i * YPM * np.sin(angle) for i in range(480)])
+angle35 = np.radians(35)  # Convert degrees to radians
+angle1175 = np.radians(117.5)
+YPM = 100/480 * np.sin(angle35)/np.sin(angle1175) # Replace with your desired constant
+Y_PIXEL_TO_MM = np.array([(i * YPM * np.sin(angle1175)/np.sin(angle35)) for i in range(480)])
+print(Y_PIXEL_TO_MM)
 
 X_PIXEL_TO_MM = 10  # Replace with your desired constant
 
