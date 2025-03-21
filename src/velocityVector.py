@@ -102,7 +102,7 @@ def main():
     # i2c.write_block(0x05, [True], '=?') #ready to start
     
     # while True:
-    #     resume = i2c.read_block(0x06, 1)
+    #     resume = i2c.read_block(0x05, 1)
     #     if resume:
     #         break
     #     sleep(0.01)
@@ -133,7 +133,7 @@ def main():
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
-            i2c.write_block(0x00, [dx, dy, angle], '=fff')            
+            i2c.write_block(0x10, [dx, dy, angle], '=fff')
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
             i2c.write_block(0x02, [0, 0, 0], '=hhh')
