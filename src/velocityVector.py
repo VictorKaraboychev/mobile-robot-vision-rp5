@@ -133,10 +133,10 @@ def main():
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
-            # i2c.write_block(0x00, [dx, dy, angle], '=fff')            
+            i2c.write_block(0x00, [dx, dy, angle], '=fff')            
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
-            # i2c.write_block(0x02, [0, 0, 0], '=hhh')
+            i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
