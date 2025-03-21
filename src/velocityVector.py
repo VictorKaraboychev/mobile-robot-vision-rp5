@@ -8,7 +8,7 @@ angle35 = np.radians(35)  # Convert degrees to radians
 angle1175 = np.radians(117.5)
 YPM = 100/480 * np.sin(angle35)/np.sin(angle1175) # Replace with your desired constant
 Y_PIXEL_TO_MM = np.array([(i * YPM * np.sin(angle1175)/np.sin(angle35)) for i in range(480)])
-print(Y_PIXEL_TO_MM)
+# print(Y_PIXEL_TO_MM)
 
 X_PIXEL_TO_MM = 10  # Replace with your desired constant
 
@@ -30,19 +30,19 @@ def get_trajectory_vector(image):
     upper_red2 = np.array([180, 255, 255])
     
     # Define the HSV range for detecting blue color
-    lower_blue1 = np.array([100, 150, 50])
-    upper_blue1 = np.array([120, 255, 255])
-    lower_blue2 = np.array([120, 150, 50])
-    upper_blue2 = np.array([140, 255, 255])
+    # lower_blue1 = np.array([100, 150, 50])
+    # upper_blue1 = np.array([120, 255, 255])
+    # lower_blue2 = np.array([120, 150, 50])
+    # upper_blue2 = np.array([140, 255, 255])
 
     # Create masks for the red color range
     mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask_red = cv2.bitwise_or(mask_r1, mask_r2)
     
-    mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
-    mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
-    mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
+    # mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
+    # mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
+    # mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
@@ -50,15 +50,15 @@ def get_trajectory_vector(image):
     mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_CLOSE, kernel)
     
     # Apply morphological operations to clean up the mask
-    kernel = np.ones((5, 5), np.uint8)
-    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
-    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
+    # kernel = np.ones((5, 5), np.uint8)
+    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
+    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
 
     # Find contours in the mask
     contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Find contours in the mask
-    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # if contours_blue:
     #     return True
@@ -74,7 +74,7 @@ def get_trajectory_vector(image):
 
             # Get the bottom center of the frame (robot's perspective origin)
             height, width, _ = image.shape
-            bottom_center = (width // 2, height)
+            bottom_center = (width // 4, height)
 
             # Calculate trajectory vector (dx, dy)
             dx = cx - bottom_center[0]  # Horizontal offset (strafe direction)
@@ -133,10 +133,10 @@ def main():
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
-            i2c.write_block(0x00, [dx, dy, angle], '=fff')            
+            # i2c.write_block(0x00, [dx, dy, angle], '=fff')            
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
-            i2c.write_block(0x02, [0, 0, 0], '=hhh')
+            # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
@@ -147,7 +147,7 @@ def main():
         sleep(0.01)
 
     cap.release()
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
