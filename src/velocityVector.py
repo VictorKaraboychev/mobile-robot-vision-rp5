@@ -4,11 +4,13 @@ import math
 from time import sleep
 from i2c_comms import I2CComms
 
-angle35 = np.radians(35)  # Convert degrees to radians
-angle1175 = np.radians(117.5)
-YPM = 100/480 * np.sin(angle35)/np.sin(angle1175) # Replace with your desired constant
-Y_PIXEL_TO_MM = np.array([(i * YPM * np.sin(angle1175)/np.sin(angle35)) for i in range(480)])
+# angle35 = np.radians(35)  # Convert degrees to radians
+# angle1175 = np.radians(117.5)
+# YPM = 100/480 * np.sin(angle35)/np.sin(angle1175) # Replace with your desired constant
+# Y_PIXEL_TO_MM = np.array([(i * YPM * np.sin(angle1175)/np.sin(angle35)) for i in range(480)])
 # print(Y_PIXEL_TO_MM)
+
+Y_PIXEL_TO_MM = 1
 
 X_PIXEL_TO_MM = 10  # Replace with your desired constant
 
@@ -85,9 +87,9 @@ def get_trajectory_vector(image):
             # angle = math.floor(angle)
 
             # Visualize the path and trajectory vector on the frame
-            # cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
-            # cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
-            # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+            cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
+            cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
+            cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
             return dx, dy, angle
 
@@ -139,7 +141,7 @@ def main():
             i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
-        # cv2.imshow('Frame', frame)
+        cv2.imshow('Frame', frame)
 
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -147,7 +149,7 @@ def main():
         sleep(0.01)
 
     cap.release()
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
