@@ -131,7 +131,7 @@ def main():
         if trajectory:
             dx, dy, angle = trajectory
             dx = dx*X_PIXEL_TO_MM
-            dy = Y_PIXEL_TO_MM[dy]
+            dy = dx*Y_PIXEL_TO_MM
             
             print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
             
