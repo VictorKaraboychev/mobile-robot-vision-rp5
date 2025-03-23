@@ -32,7 +32,7 @@ K = np.array([[fx, 0, cx],
 
 # Extrinsic parameters
 tilt_angle_deg = 45  # Tilt from horizontal
-height = 0.05  # 5 cm in meters
+height = 0.0575  # 5 cm in meters
 
 # Rotation matrix (tilt around X-axis)
 theta = np.radians(tilt_angle_deg)
