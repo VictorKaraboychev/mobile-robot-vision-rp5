@@ -60,7 +60,7 @@ def find_real_world_coordinates(x, y):
     ground_point = cv2.perspectiveTransform(pixel, H_inv)
     return ground_point[0][0][:2]  # Return X, Y (Z=0)
 
-REF_X, REF_Y = find_real_world_coordinates(320, 480)
+REF_X, REF_Y = find_real_world_coordinates(640 // 4, 480)
 
 def get_trajectory_vector(image):
     """
