@@ -174,7 +174,7 @@ def main():
             dx, dy = trajectory
             gpx, gpy = find_real_world_coordinates(dx, dy)
 
-            dist_x, dist_y = (gpx - REF_X, gpy - REF_Y)
+            dist_x, dist_y = (REF_X - gpx, REF_Y - gpy)
             
             angle = math.atan2(dist_x, dist_y)
             
