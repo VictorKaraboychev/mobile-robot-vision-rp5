@@ -125,8 +125,8 @@ def get_trajectory_vector(image):
             bottom_center = (width // 4, height)
 
             # Calculate trajectory vector (dx, dy)
-            dx = cx - bottom_center[0]  # Horizontal offset (strafe direction)
-            dy = bottom_center[1] - cy  # Vertical distance to the path end
+            dx = cx
+            dy = cy  # Vertical distance to the path end
 
             # Visualize the path and trajectory vector on the frame
             cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
