@@ -143,7 +143,7 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
-    i2c.write_block([0x05], '=B') #ready to start
+    i2c.write_block(0x05) #ready to start
     
     # while True:
     #     resume = i2c.read_block(0x05, 1)
@@ -164,7 +164,7 @@ def main():
 
         # if trajectory == True:
         #     print("Arrived ")
-        #     i2c.write_block([0x01, True], '=B?')
+        #     i2c.write_block(0x01, [True], '=?')
         #     while True:
         #         resume = i2c.read_block(0x11, 1)
         #         if resume:
@@ -180,10 +180,10 @@ def main():
             
             print(f"Trajectory Vector: dx={dist_x}, dy={dist_y}, angle={angle} degrees")
             
-            i2c.write_block([0x10, dist_x, dist_y, angle], '=Bfff')
+            i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
-            i2c.write_block([0x02, 0, 0, 0], '=Bhhh')
+            i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)

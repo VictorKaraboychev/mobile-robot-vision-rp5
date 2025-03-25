@@ -23,12 +23,11 @@ class I2CComms:
         except Exception as e:
             print(f"Error: {e}")
 
-    def write_block(self, data, format_string):
+    def write_block(self, cmd, data = [], format_string = '='):
         try:
             struc = list(struct.pack(format_string, *data))
-            length_of_data = len(struc)
-            self.bus.write_i2c_block_data(self.device_addr, length_of_data, struc)
-            print(f"Send Data: {data} of Length: {length_of_data}")
+            self.bus.write_i2c_block_data(self.device_addr, cmd, struc)
+            print(f"Send Data: {data} to: {cmd}")
         except Exception as e:
             print(f"Error: {e}")
 
@@ -51,9 +50,9 @@ i2c = I2CComms(1, 0x08)
 
 # i2c.write_block([0x69, True, 4.20], "=B?f")
 input("Press Enter to continue...")
-i2c.write_block([0x05], "=B")
+i2c.write_block(0x05)
 input("Press Enter to continue...")
-i2c.write_block([0x06], "=B")
+i2c.write_block(0x06)
 
 while True:
     dx = 1.1
