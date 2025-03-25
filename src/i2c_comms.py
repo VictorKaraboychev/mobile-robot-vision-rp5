@@ -44,7 +44,7 @@ class I2CComms:
 i2c = I2CComms(1, 0x08)
 
 i2c.write_block([0x05], "=B")
-sleep(5)
+input("Press Enter to continue...")
 i2c.write_block([0x06], "=B")
 
 while True:
