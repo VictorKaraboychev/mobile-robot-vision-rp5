@@ -43,6 +43,8 @@ class I2CComms:
 
 i2c = I2CComms(1, 0x08)
 
+i2c.write_block([0x69, True, 4.20], "=B?f")
+input("Press Enter to continue...")
 i2c.write_block([0x05], "=B")
 input("Press Enter to continue...")
 i2c.write_block([0x06], "=B")
