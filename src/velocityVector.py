@@ -6,19 +6,19 @@ from i2c_comms import I2CComms
 from enum import Enum
 
 class State(Enum):
-    DISABLED = 0
-    ENABLED = 1
-    ENABLING_TRANSITION = 2
-    DISABLING_TRANSITION = 3
-    PICKUP_TRANSITION = 4
-    DROPOFF_TRANSITION = 5
+    Disabled = 0
+    Enabled = 1
+    Enabling_Transition = 2
+    Disabling_Transition = 3
+    Pickup_Transition = 4
+    Dropoff_Transistion = 5
     
 class Event(Enum):
-    NONE = 0
-    ENABLE = 1
-    DISABLE = 2
-    PICKUP = 3
-    DROPOFF = 4
+    None = 0
+    Enable = 1
+    Diable = 2
+    Pickup = 3
+    Dropoff = 4
 
 # Camera intrinsic parameters
 focal_length_mm = 4.0
@@ -139,9 +139,9 @@ def get_trajectory_vector(image):
             dy = cy
 
             # Visualize the path and trajectory vector on the frame
-            cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
-            cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
-            cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+            # cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
+            # cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
+            # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
             return dx, dy
 
@@ -153,11 +153,11 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
-    i2c.write_block(0x05, [1], "=B") #ready to start
+    i2c.write_block(0x05, [Event.Enable], "=B") #ready to start
     input("potato:")
     while True:
         result = i2c.read_block(0x85, 1)
-        if result[0] == State.ENABLED:
+        if result[0] == State.Enabled:
             break
         sleep(0.01)
 
@@ -174,13 +174,13 @@ def main():
         
         state = i2c.read_block(0x85, 1)
         sleep(0.01)
-        if state[0] == State.DISABLED:
+        if state[0] == State.Disabled:
             break
-        if state[0] != State.ENABLED:
+        if state[0] != State.Enabled:
             continue
         elif trajectory == True:
             print("Arrived ")
-            i2c.write_block(0x05, [Event.PICKUP], '=B')
+            i2c.write_block(0x05, [Event.Pickup], '=B')
         elif trajectory:
             dx, dy = trajectory
             gp = find_real_world_coordinates(dx, dy)
@@ -197,7 +197,7 @@ def main():
             i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
-        cv2.imshow('Frame', frame)
+        # cv2.imshow('Frame', frame)
 
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
