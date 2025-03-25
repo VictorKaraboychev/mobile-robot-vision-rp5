@@ -49,7 +49,7 @@ t = R @ -C  # Translation vector
 # Homography matrix H = K * [R1 R2 t]
 R1 = R[:, 0]
 R2 = R[:, 1]
-H_columns = np.column_stack((R1, R2, t))
+H_columns = np.column_stack((-R1, R2, t))
 H = K @ H_columns
 
 # Inverse homography to map image to ground
@@ -60,7 +60,7 @@ def find_real_world_coordinates(x, y):
     ground_point = cv2.perspectiveTransform(pixel, H_inv)
     return ground_point[0][0][:2]  # Return X, Y (Z=0)
 
-REF_X, REF_Y = find_real_world_coordinates(640 // 4, 480)
+REF_X, REF_Y = find_real_world_coordinates(image_width // 4, 480)
 
 def get_trajectory_vector(image):
     """
@@ -143,7 +143,7 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
-    # i2c.write_block(0x05, [True], '=?') #ready to start
+    i2c.write_block([0x05, True], '=B?') #ready to start
     
     # while True:
     #     resume = i2c.read_block(0x05, 1)
@@ -164,7 +164,7 @@ def main():
 
         # if trajectory == True:
         #     print("Arrived ")
-        #     i2c.write_block(0x01, [True], '=?')
+        #     i2c.write_block([0x01, True], '=B?')
         #     while True:
         #         resume = i2c.read_block(0x11, 1)
         #         if resume:
@@ -180,10 +180,10 @@ def main():
             
             print(f"Trajectory Vector: dx={dist_x}, dy={dist_y}, angle={angle} degrees")
             
-            i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
+            i2c.write_block([0x10, dist_x, dist_y, angle], '=Bfff')
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
-            i2c.write_block(0x02, [0, 0, 0], '=hhh')
+            i2c.write_block([0x02, 0, 0, 0], '=Bhhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
