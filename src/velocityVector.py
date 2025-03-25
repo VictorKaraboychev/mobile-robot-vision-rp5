@@ -3,15 +3,15 @@ import numpy as np
 import math
 from time import sleep
 from i2c_comms import I2CComms
-from enum import Enum
 
-class State(Enum):
-    Disabled = int(0)
-    Enabled = int(1)
-    Enabling_Transition = int(2)
-    Disabling_Transition = int(3)
-    Pickup_Transition = int(4)
+State = dict(
+    Disabled = int(0),
+    Enabled = int(1),
+    Enabling_Transition = int(2),
+    Disabling_Transition = int(3),
+    Pickup_Transition = int(4),
     Dropoff_Transistion = int(5)
+)
     
 Event = dict(
     No_Event = int(0),
@@ -158,7 +158,7 @@ def main():
     input("potato:")
     while True:
         result = i2c.read_block(0x85, 1)
-        if result[0] == State.Enabled:
+        if result[0] == State['Enabled']:
             break
         sleep(0.01)
 
@@ -175,13 +175,13 @@ def main():
         
         state = i2c.read_block(0x85, 1)
         sleep(0.01)
-        if state[0] == State.Disabled:
+        if state[0] == State['Disabled']:
             break
-        if state[0] != State.Enabled:
+        if state[0] != State['Enabled']:
             continue
         elif trajectory == True:
             print("Arrived ")
-            i2c.write_block(0x05, [Event.Pickup], '=B')
+            i2c.write_block(0x05, [Event['Pickup']], '=B')
         elif trajectory:
             dx, dy = trajectory
             gp = find_real_world_coordinates(dx, dy)
