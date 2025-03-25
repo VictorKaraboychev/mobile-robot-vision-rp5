@@ -153,7 +153,7 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
-    i2c.write_block(0x05, [Event.ENABLE], "=B") #ready to start
+    i2c.write_block(0x05, [1], "=B") #ready to start
     input("potato:")
     while True:
         result = i2c.read_block(0x85, 1)
