@@ -14,7 +14,7 @@ class State(Enum):
     Dropoff_Transistion = 5
     
 class Event(Enum):
-    None = 0
+    No_Event = 0
     Enable = 1
     Diable = 2
     Pickup = 3
