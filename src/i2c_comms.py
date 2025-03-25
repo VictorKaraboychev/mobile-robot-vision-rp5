@@ -36,7 +36,9 @@ class I2CComms:
 
     def read_block(self, register, number_of_values):
         try:
-            return self.bus.read_i2c_block_data(self.device_addr, register, number_of_values)
+            retval = self.bus.read_i2c_block_data(self.device_addr, register, number_of_values)
+            print(f"Recieved Data: {retval} to: {register}")
+            return retval
         except Exception as e:
             print(f"Error: {e}")
 
@@ -52,9 +54,22 @@ i2c = I2CComms(1, 0x08)
 
 # i2c.write_block([0x69, True, 4.20], "=B?f")
 input("Press Enter to continue...")
-i2c.write_block(cmd = 0x05)
-# input("Press Enter to continue...")
-# i2c.write_block(0x06)
+i2c.write_block(0x05, [True], "=?") #ready to start
+    
+while True:
+    resume = i2c.read_block(0x85, 1)
+    if resume:
+        break
+    sleep(0.01)
+    
+input("Press Enter to continue...")
+i2c.write_block(0x05, [False], "=?") #ready to start
+
+while True:
+    resume = i2c.read_block(0x85, 1)
+    if not resume:
+        break
+    sleep(0.01)
 
 while True:
     dx = 1.1
