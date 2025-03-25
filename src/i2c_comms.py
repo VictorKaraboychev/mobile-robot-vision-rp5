@@ -57,9 +57,9 @@ input("Press Enter to continue...")
 i2c.write_block(0x05, [True], "=?") #ready to start
     
 while True:
-    resume = i2c.read_block(0x85, 1)
+    result = i2c.read_block(0x85, 1)
     
-    if struct.unpack("=?", bytes(resume)):
+    if result[0]:
         break
     sleep(0.01)
     
@@ -67,8 +67,8 @@ input("Press Enter to continue...")
 i2c.write_block(0x05, [False], "=?") #ready to start
 
 while True:
-    resume = i2c.read_block(0x85, 1)
-    if not resume:
+    result = i2c.read_block(0x85, 1)
+    if not result[0]:
         break
     sleep(0.01)
 
