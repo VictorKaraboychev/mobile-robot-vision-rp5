@@ -18,7 +18,10 @@ class I2CComms:
         self.bus.write_byte(self.device_addr, value)
 
     def read_byte(self):
-        return self.bus.read_byte(self.device_addr)
+        try:
+            return self.bus.read_byte(self.device_addr)
+        except Exception as e:
+            print(f"Error: {e}")
 
     def write_block(self, data, format_string):
         try:
@@ -31,7 +34,10 @@ class I2CComms:
 
 
     def read_block(self, register, number_of_values):
-        return self.bus.read_i2c_block_data(self.device_addr, register, number_of_values)
+        try:
+            return self.bus.read_i2c_block_data(self.device_addr, register, number_of_values)
+        except Exception as e:
+            print(f"Error: {e}")
 
     def close(self):
         self.bus.close()
