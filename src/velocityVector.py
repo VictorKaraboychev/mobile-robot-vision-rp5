@@ -60,7 +60,7 @@ def find_real_world_coordinates(x, y):
     ground_point = cv2.perspectiveTransform(pixel, H_inv)
     return ground_point[0][0][:2]  # Return X, Y (Z=0)
 
-REF_X, REF_Y = find_real_world_coordinates(image_width // 4, 480)
+REF = find_real_world_coordinates(image_width // 4, 480)
 
 def get_trajectory_vector(image):
     """
@@ -126,7 +126,7 @@ def get_trajectory_vector(image):
 
             # Calculate trajectory vector (dx, dy)
             dx = cx
-            dy = cy  # Vertical distance to the path end
+            dy = cy
 
             # Visualize the path and trajectory vector on the frame
             cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
@@ -172,9 +172,9 @@ def main():
         #         sleep(0.01)
         if trajectory:
             dx, dy = trajectory
-            gpx, gpy = find_real_world_coordinates(dx, dy)
+            gp = find_real_world_coordinates(dx, dy)
 
-            dist_x, dist_y = (REF_X - gpx, REF_Y - gpy)
+            dist_x, dist_y = gp - REF
             
             angle = math.atan2(dist_x, dist_y)
             
