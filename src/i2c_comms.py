@@ -50,52 +50,52 @@ class I2CComms:
             self.write_block(5, [1,2,3,4,5])
 
 
-i2c = I2CComms(1, 0x08)
+# i2c = I2CComms(1, 0x08)
 
-# i2c.write_block([0x69, True, 4.20], "=B?f")
-input("Press Enter to continue...")
-i2c.write_block(0x05, [True], "=?") #ready to start
+# # i2c.write_block([0x69, True, 4.20], "=B?f")
+# input("Press Enter to continue...")
+# i2c.write_block(0x05, [True], "=?") #ready to start
 
-while True:
-    result = i2c.read_block(0x85, 1)
-    if result[0]:
-        break
-    sleep(0.01)
+# while True:
+#     result = i2c.read_block(0x85, 1)
+#     if result[0]:
+#         break
+#     sleep(0.01)
 
-input("Press Enter to continue...")
-i2c.write_block(0x11) #ready to start
+# input("Press Enter to continue...")
+# i2c.write_block(0x11) #ready to start
 
-while True:
-    result = i2c.read_block(0x86, 1)
-    if result[0]:
-        break
-    sleep(0.01)
+# while True:
+#     result = i2c.read_block(0x86, 1)
+#     if result[0]:
+#         break
+#     sleep(0.01)
     
-input("Press Enter to continue...")
-i2c.write_block(0x12) #ready to start
+# input("Press Enter to continue...")
+# i2c.write_block(0x12) #ready to start
 
-input("Press Enter to continue...")
-i2c.write_block(0x05, [False], "=?") #ready to start
+# input("Press Enter to continue...")
+# i2c.write_block(0x05, [False], "=?") #ready to start
 
-while True:
-    result = i2c.read_block(0x85, 1)
-    if not result[0]:
-        break
-    sleep(0.01)
+# while True:
+#     result = i2c.read_block(0x85, 1)
+#     if not result[0]:
+#         break
+#     sleep(0.01)
 
-while True:
-    dx = 1.1
-    dy = 2.1
-    angle = 90.1
+# while True:
+#     dx = 1.1
+#     dy = 2.1
+#     angle = 90.1
 
-    # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
-    # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
-    # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
+#     # dx = math.floor(np.interp(dx, [-320, 320], [0,255]))
+#     # dy = math.floor(np.interp(dy, [0, 480], [0,255]))
+#     # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
     
-    # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
+#     # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
 
-    # val = i2c.read_block(0x81, 12)
-    # print(f"Byte: {val}")
-    sleep(1)
+#     # val = i2c.read_block(0x81, 12)
+#     # print(f"Byte: {val}")
+#     sleep(1)
     
