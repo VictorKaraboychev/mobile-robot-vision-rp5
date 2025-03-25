@@ -58,7 +58,8 @@ i2c.write_block(0x05, [True], "=?") #ready to start
     
 while True:
     resume = i2c.read_block(0x85, 1)
-    if resume:
+    
+    if struct.unpack("=?", resume):
         break
     sleep(0.01)
     
