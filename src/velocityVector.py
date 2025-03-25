@@ -86,9 +86,9 @@ def get_trajectory_vector(image):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     # Define the HSV range for detecting red color
-    lower_red1 = np.array([0, 50, 50])
+    lower_red1 = np.array([0, 130, 130])
     upper_red1 = np.array([10, 255, 255])
-    lower_red2 = np.array([170, 50, 50])
+    lower_red2 = np.array([170, 100, 100])
     upper_red2 = np.array([180, 255, 255])
     
     # Define the HSV range for detecting blue color
