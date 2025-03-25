@@ -13,12 +13,13 @@ class State(Enum):
     Pickup_Transition = int(4)
     Dropoff_Transistion = int(5)
     
-class Event(Enum):
-    No_Event = int(0)
-    Enable = int(1)
-    Diable = int(2)
-    Pickup = int(3)
+Event = dict(
+    No_Event = int(0),
+    Enable = int(1),
+    Diable = int(2),
+    Pickup = int(3),
     Dropoff = int(4)
+)
 
 # Camera intrinsic parameters
 focal_length_mm = 4.0
