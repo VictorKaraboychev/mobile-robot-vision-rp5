@@ -146,8 +146,8 @@ def main():
     i2c.write_block(0x05, [True], "=?") #ready to start
     
     while True:
-        resume = i2c.read_block(0x85, 1)
-        if resume:
+        result = i2c.read_block(0x85, 1)
+        if result[0]:
             break
         sleep(0.01)
 
@@ -162,14 +162,14 @@ def main():
         # Get trajectory vector
         trajectory = get_trajectory_vector(frame)
 
-        # if trajectory == True:
-        #     print("Arrived ")
-        #     i2c.write_block(0x01, [True], '=?')
-        #     while True:
-        #         resume = i2c.read_block(0x11, 1)
-        #         if resume:
-        #             break
-        #         sleep(0.01)
+        if trajectory == True:
+            print("Arrived ")
+            i2c.write_block(0x01, [True], '=?')
+            while True:
+                result = i2c.read_block(0x86, 1)[0]
+                if result:
+                    break
+                sleep(0.01)
         if trajectory:
             dx, dy = trajectory
             gp = find_real_world_coordinates(dx, dy)
@@ -192,9 +192,12 @@ def main():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         sleep(0.01)
+        
+        if i2c.read_block(0x85, 1)[0]:
+            break
 
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
