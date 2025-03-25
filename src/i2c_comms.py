@@ -68,7 +68,7 @@ while True:
     # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
 
-    val = i2c.read_block(0x81, 1)
+    val = i2c.read_block(0x81, 12)
     print(f"Byte: {val}")
     sleep(1)
     
