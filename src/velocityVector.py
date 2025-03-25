@@ -49,7 +49,7 @@ t = R @ -C  # Translation vector
 # Homography matrix H = K * [R1 R2 t]
 R1 = R[:, 0]
 R2 = R[:, 1]
-H_columns = np.column_stack((-R1, R2, t))
+H_columns = np.column_stack((R1, R2, t))
 H = K @ H_columns
 
 # Inverse homography to map image to ground
