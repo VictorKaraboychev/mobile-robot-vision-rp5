@@ -3,12 +3,22 @@ import numpy as np
 import math
 from time import sleep
 from i2c_comms import I2CComms
+from enum import Enum
 
-# angle35 = np.radians(35)  # Convert degrees to radians
-# angle1175 = np.radians(117.5)
-# YPM = 100/480 * np.sin(angle35)/np.sin(angle1175) # Replace with your desired constant
-# Y_PIXEL_TO_MM = np.array([(i * YPM * np.sin(angle1175)/np.sin(angle35)) for i in range(480)])
-# print(Y_PIXEL_TO_MM)
+class State(Enum):
+    DISABLED = 0
+    ENABLED = 1
+    ENABLING_TRANSITION = 2
+    DISABLING_TRANSITION = 3
+    PICKUP_TRANSITION = 4
+    DROPOFF_TRANSITION = 5
+    
+class Event(Enum):
+    NONE = 0
+    ENABLE = 1
+    DISABLE = 2
+    PICKUP = 3
+    DROPOFF = 4
 
 # Camera intrinsic parameters
 focal_length_mm = 4.0
@@ -143,11 +153,11 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
-    i2c.write_block(0x05, [True], "=?") #ready to start
+    i2c.write_block(0x05, [Event.ENABLE], "=B") #ready to start
     
     while True:
         result = i2c.read_block(0x85, 1)
-        if result[0]:
+        if result[0] == State.ENABLED:
             break
         sleep(0.01)
 
@@ -161,16 +171,17 @@ def main():
 
         # Get trajectory vector
         trajectory = get_trajectory_vector(frame)
-
-        if trajectory == True:
+        
+        state = i2c.read_block(0x85, 1)
+        sleep(0.01)
+        if state[0] == State.DISABLED:
+            break
+        if state[0] != State.ENABLED:
+            continue
+        elif trajectory == True:
             print("Arrived ")
-            i2c.write_block(0x01, [True], '=?')
-            while True:
-                result = i2c.read_block(0x86, 1)[0]
-                if result:
-                    break
-                sleep(0.01)
-        if trajectory:
+            i2c.write_block(0x05, [Event.PICKUP], '=B')
+        elif trajectory:
             dx, dy = trajectory
             gp = find_real_world_coordinates(dx, dy)
 
@@ -192,9 +203,6 @@ def main():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         sleep(0.01)
-        
-        if i2c.read_block(0x85, 1)[0]:
-            break
 
     cap.release()
     # cv2.destroyAllWindows()

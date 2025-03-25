@@ -56,8 +56,20 @@ i2c = I2CComms(1, 0x08)
 input("Press Enter to continue...")
 i2c.write_block(0x05, [True], "=?") #ready to start
 
+while True:
+    result = i2c.read_block(0x85, 1)
+    if result[0]:
+        break
+    sleep(0.01)
+
 input("Press Enter to continue...")
 i2c.write_block(0x11) #ready to start
+
+while True:
+    result = i2c.read_block(0x86, 1)
+    if result[0]:
+        break
+    sleep(0.01)
     
 input("Press Enter to continue...")
 i2c.write_block(0x12) #ready to start
@@ -83,7 +95,7 @@ while True:
     # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
 
-    val = i2c.read_block(0x81, 12)
-    print(f"Byte: {val}")
+    # val = i2c.read_block(0x81, 12)
+    # print(f"Byte: {val}")
     sleep(1)
     
