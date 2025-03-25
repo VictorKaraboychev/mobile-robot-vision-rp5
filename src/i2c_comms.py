@@ -43,6 +43,10 @@ class I2CComms:
 
 i2c = I2CComms(1, 0x08)
 
+i2c.write_block([0x05], "=B")
+sleep(5)
+i2c.write_block([0x06], "=B")
+
 while True:
     dx = 1.1
     dy = 2.1
@@ -54,7 +58,7 @@ while True:
     
     # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
     
-    val = i2c.read_byte(1)
-    print("Byte: {val}")
+    # val = i2c.read_byte(1)
+    # print(f"Byte: {val}")
     sleep(1)
     
