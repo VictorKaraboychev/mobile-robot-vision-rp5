@@ -135,7 +135,7 @@ def get_trajectory_vector(image):
 
             # Get the bottom center of the frame (robot's perspective origin)
             height, width, _ = image.shape
-            bottom_center = (width // 4, height)
+            bottom_center = (width // 2, height)
 
             # Calculate trajectory vector (dx, dy)
             dx = cx
