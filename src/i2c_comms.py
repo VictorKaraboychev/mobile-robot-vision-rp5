@@ -50,8 +50,8 @@ class I2CComms:
 i2c = I2CComms(1, 0x08)
 
 # i2c.write_block([0x69, True, 4.20], "=B?f")
-# input("Press Enter to continue...")
-# i2c.write_block([0x05], "=B")
+input("Press Enter to continue...")
+i2c.write_block([0x05], "=B")
 # input("Press Enter to continue...")
 # i2c.write_block([0x06], "=B")
 
@@ -65,6 +65,7 @@ while True:
     # angle = math.floor(np.interp(angle, [0, 360], [0,255]))
     
     # print(f"Trajectory Vector: dx={dx}, dy={dy}, angle={angle} degrees")
+    
     
     val = i2c.read_block(0x81, 1)
     print(f"Byte: {val}")
