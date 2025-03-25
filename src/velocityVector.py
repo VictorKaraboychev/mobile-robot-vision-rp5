@@ -6,19 +6,19 @@ from i2c_comms import I2CComms
 from enum import Enum
 
 class State(Enum):
-    Disabled = 0
-    Enabled = 1
-    Enabling_Transition = 2
-    Disabling_Transition = 3
-    Pickup_Transition = 4
-    Dropoff_Transistion = 5
+    Disabled = int(0)
+    Enabled = int(1)
+    Enabling_Transition = int(2)
+    Disabling_Transition = int(3)
+    Pickup_Transition = int(4)
+    Dropoff_Transistion = int(5)
     
 class Event(Enum):
-    No_Event = 0
-    Enable = 1
-    Diable = 2
-    Pickup = 3
-    Dropoff = 4
+    No_Event = int(0)
+    Enable = int(1)
+    Diable = int(2)
+    Pickup = int(3)
+    Dropoff = int(4)
 
 # Camera intrinsic parameters
 focal_length_mm = 4.0
