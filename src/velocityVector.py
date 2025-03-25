@@ -119,8 +119,8 @@ def get_trajectory_vector(image):
     # Find contours in the mask
     contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    # if contours_blue:
-    #     return True
+    if contours_blue:
+        return True
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
