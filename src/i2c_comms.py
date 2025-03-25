@@ -27,7 +27,7 @@ class I2CComms:
         try:
             struc = list(struct.pack(format_string, *data))
             length = len(struc)
-            data_to_send = [length] + struc
+            data_to_send = list(length) + struc
             self.bus.write_i2c_block_data(self.device_addr, cmd, data_to_send)
             print(f"Send Data: {data_to_send} to: {cmd}")
         except Exception as e:
