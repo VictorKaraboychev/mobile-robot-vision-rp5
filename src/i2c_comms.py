@@ -50,7 +50,7 @@ class I2CComms:
             self.write_block(5, [1,2,3,4,5])
 
 
-i2c = I2CComms(1, 0x08)
+# i2c = I2CComms(1, 0x08)
 
 # # i2c.write_block([0x69, True, 4.20], "=B?f")
 # input("Press Enter to continue...")
@@ -100,15 +100,15 @@ i2c = I2CComms(1, 0x08)
 #     sleep(1)
     
     
-with open("sensor_data.txt", "a") as file:
-    while True:
-        val = i2c.read_block(0x81, 12)
+# with open("sensor_data.txt", "a") as file:
+#     while True:
+#         val = i2c.read_block(0x81, 12)
         
-        data = struct.unpack("=fff", bytes(val))
+#         data = struct.unpack("=fff", bytes(val))
         
-        file.write(val+ "\n")
-        file.flush()
+#         file.write(val+ "\n")
+#         file.flush()
         
-        print(data)
+#         print(data)
         
-        sleep(0.5)
+#         sleep(0.5)
