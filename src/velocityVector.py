@@ -240,7 +240,7 @@ def main():
             break
         sleep(0.01)
         
-        with open("sensor_data.txt", "a") as file:
+        with open("sensor_data.json", "a") as file:
             val = i2c.read_block(0x81, 12)
         
             data = struct.unpack("=fff", bytes(val))
@@ -248,6 +248,7 @@ def main():
             json_data = json.dumps({"floats": data})
             
             file.write(json_data)
+            file.write("\n")
             file.flush()
         
             print(data)
