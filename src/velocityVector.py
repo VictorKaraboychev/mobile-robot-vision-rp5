@@ -225,11 +225,11 @@ def main():
             
             angle = math.atan2(dist_x, dist_y)
             
-            print(f"Trajectory Vector: dx={dist_x}, dy={dist_y}, angle={angle} degrees")
+            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={angle} rad")
             
             i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
         else:
-            print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
+            print(f"No path detected: dx={0}, dy={0}, angle={0} rad")
             i2c.write_block(0x05, [Event['Disable']], "=B") #ready to start
             # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
