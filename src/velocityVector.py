@@ -208,7 +208,10 @@ def main():
         trajectory = get_trajectory_vector(frame)
         
         state = i2c.read_block(0x85, 1)
+        
         sleep(0.01)
+        
+        direction = True
         if state[0] == State['Disabled']:
             print(f"End Code")
             break
@@ -225,12 +228,24 @@ def main():
             
             angle = math.atan2(dist_x, dist_y)
             
+            if angle > 0 : 
+                direction = True
+            else:
+                direction = False
+            
             print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={angle} rad")
             
             i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} rad")
-            i2c.write_block(0x05, [Event['Disable']], "=B") #ready to start
+            dy = 0.001
+            if direction:
+                dx = 0.1
+            else:
+                dx = -0.1
+                
+            angle = math.atan2(dx, dy)
+            i2c.write_block(0x10, [dx, dy, angle], '=fff')
             # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
@@ -239,7 +254,7 @@ def main():
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-        sleep(0.01)
+        # sleep(0.01)
         
         with open("sensor_data.json", "a") as file:
             val = i2c.read_block(0x81, 12)
