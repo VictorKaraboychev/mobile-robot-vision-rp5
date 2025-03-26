@@ -127,6 +127,9 @@ def get_trajectory_vector(image):
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
 
+        # Calculate trajectory vector (dx, dy)
+        dx = 0
+        dy = 0
         # Calculate the center of the largest contour
         moments = cv2.moments(largest_contour)
         if moments['m00'] > 0:
@@ -137,16 +140,41 @@ def get_trajectory_vector(image):
             height, width, _ = image.shape
             bottom_center = (width // 2, height)
 
+            
             # Calculate trajectory vector (dx, dy)
             dx = cx
             dy = cy
-
+            
             # Visualize the path and trajectory vector on the frame
-            cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
-            cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
-            cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+            
+        cv2.circle(image, (dx, dy), 5, (0, 255, 0), -1)  # Path center
+        cv2.line(image, bottom_center, (dx, dy), (255, 0, 0), 2)  # Trajectory vector
+        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-            return dx, dy
+        
+
+        # Get the bottom center of the frame (robot's perspective origin)
+        height, width, _ = image.shape
+        bottom_center = (width // 2, height)
+        bc_x, bc_y = bottom_center
+
+        # Reshape contour points to a 2D array of (x, y) coordinates
+        contour_points = largest_contour.reshape(-1, 2)
+        
+        if contour_points.size == 0:
+            return None  # No points in the contour
+
+        # Calculate squared distances from bottom_center to all contour points
+        distances_sq = (contour_points[:, 0] - bc_x)**2 + (contour_points[:, 1] - bc_y)**2
+        farthest_idx = np.argmax(distances_sq)
+        fx, fy = contour_points[farthest_idx]
+
+        # Visualize the path and trajectory vector on the frame
+        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
+        cv2.line(image, (dx,dy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
+        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+
+        return fx, fy
 
     return None  # Return None if no path is detected
 
