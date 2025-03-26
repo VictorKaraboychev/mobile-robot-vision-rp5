@@ -17,7 +17,7 @@ State = dict(
 Event = dict(
     No_Event = int(0),
     Enable = int(1),
-    Diable = int(2),
+    Disable = int(2),
     Pickup = int(3),
     Dropoff = int(4)
 )
@@ -188,7 +188,7 @@ def main():
     i2c = I2CComms(1, 0x08)
     
     i2c.write_block(0x05, [Event['Enable']], "=B") #ready to start
-    input("potato:")
+    # input("potato:")
     while True:
         result = i2c.read_block(0x85, 1)
         if result[0] == State['Enabled']:
@@ -228,6 +228,7 @@ def main():
             i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} degrees")
+            i2c.write_block(0x05, [Event['Disable']], "=B") #ready to start
             # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
