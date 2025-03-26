@@ -1,3 +1,4 @@
+import json
 import struct
 import cv2
 import numpy as np
@@ -243,8 +244,10 @@ def main():
             val = i2c.read_block(0x81, 12)
         
             data = struct.unpack("=fff", bytes(val))
-        
-            file.write(data.__str__ + "\n")
+
+            json_data = json.dumps({"floats": data})
+            
+            file.write(json_data)
             file.flush()
         
             print(data)
