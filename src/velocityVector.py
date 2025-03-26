@@ -1,3 +1,4 @@
+import struct
 import cv2
 import numpy as np
 import math
@@ -45,7 +46,7 @@ K = np.array([[fx, 0, cx],
 
 # Extrinsic parameters
 tilt_angle_deg = -40  # Tilt from horizontal
-height = 0.0575  # 5 cm in meters
+height = 0.01025  # 5 cm in meters
 
 # Rotation matrix (tilt around X-axis)
 theta = np.radians(tilt_angle_deg)
@@ -150,31 +151,33 @@ def get_trajectory_vector(image):
         cv2.circle(image, (dx, dy), 5, (0, 255, 0), -1)  # Path center
         cv2.line(image, bottom_center, (dx, dy), (255, 0, 0), 2)  # Trajectory vector
         cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+        
+        return dx, dy
 
         
 
-        # Get the bottom center of the frame (robot's perspective origin)
-        height, width, _ = image.shape
-        bottom_center = (width // 2, height)
-        bc_x, bc_y = bottom_center
+        # # Get the bottom center of the frame (robot's perspective origin)
+        # height, width, _ = image.shape
+        # bottom_center = (width // 2, height)
+        # bc_x, bc_y = bottom_center
 
-        # Reshape contour points to a 2D array of (x, y) coordinates
-        contour_points = largest_contour.reshape(-1, 2)
+        # # Reshape contour points to a 2D array of (x, y) coordinates
+        # contour_points = largest_contour.reshape(-1, 2)
         
-        if contour_points.size == 0:
-            return None  # No points in the contour
+        # if contour_points.size == 0:
+        #     return None  # No points in the contour
 
-        # Calculate squared distances from bottom_center to all contour points
-        distances_sq = (contour_points[:, 0] - bc_x)**2 + (contour_points[:, 1] - bc_y)**2
-        farthest_idx = np.argmax(distances_sq)
-        fx, fy = contour_points[farthest_idx]
+        # # Calculate squared distances from bottom_center to all contour points
+        # distances_sq = (contour_points[:, 0] - bc_x)**2 + (contour_points[:, 1] - bc_y)**2
+        # farthest_idx = np.argmax(distances_sq)
+        # fx, fy = contour_points[farthest_idx]
 
-        # Visualize the path and trajectory vector on the frame
-        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, (dx,dy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
-        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+        # # Visualize the path and trajectory vector on the frame
+        # cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
+        # cv2.line(image, (dx,dy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
+        # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-        return fx, fy
+        # return fx, fy
 
     return None  # Return None if no path is detected
 
@@ -234,9 +237,23 @@ def main():
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         sleep(0.01)
+        
+        with open("sensor_data.txt", "a") as file:
+            val = i2c.read_block(0x81, 12)
+        
+            data = struct.unpack("=fff", bytes(val))
+        
+            file.write(data + "\n")
+            file.flush()
+        
+            print(data)
+        
+            sleep(0.5)
 
     cap.release()
     cv2.destroyAllWindows()
+    
+    
 
 if __name__ == "__main__":
     main()
