@@ -205,15 +205,15 @@ def main():
             i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
         else:
             print(f"No path detected")
-            dy = 0.001
-            if direction:
-                dx = 0.1
-            else:
-                dx = -0.1
+            # dy = 0.001
+            # if direction:
+            #     dx = 0.1
+            # else:
+            #     dx = -0.1
                 
-            angle = math.atan2(dx, dy)
-            i2c.write_block(0x10, [dx, dy, angle], '=fff')
-            # i2c.write_block(0x02, [0, 0, 0], '=hhh')
+            # angle = math.atan2(dx, dy)
+            # i2c.write_block(0x10, [dx, dy, angle], '=fff')
+            i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
