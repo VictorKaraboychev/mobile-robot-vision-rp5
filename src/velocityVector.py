@@ -233,14 +233,14 @@ def main():
             i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
         else:
             print(f"No path detected: dx={0}, dy={0}, angle={0} rad")
-            dy = 0.001
-            if direction:
-                dx = 0.1
-            else:
-                dx = -0.1
-            angle = 0.1
-                
-            i2c.write_block(0x10, [dx, dy, angle], '=fff')
+            # dy = 0
+            # dx = 0
+            # if direction:
+            #     angle = 0
+            # else:
+            #     angle = math.pi/2
+
+            i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
             # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
