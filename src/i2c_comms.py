@@ -52,6 +52,8 @@ class I2CComms:
 
 
 i2c = I2CComms(1, 0x08)
+i2c.write_block(0x05, [1], "=?") #ready to start
+sleep(3)
 i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
 
 # # i2c.write_block([0x69, True, 4.20], "=B?f")
