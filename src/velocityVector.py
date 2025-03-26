@@ -44,7 +44,7 @@ K = np.array([[fx, 0, cx],
             [0, 0, 1]], dtype=np.float32)
 
 # Extrinsic parameters
-tilt_angle_deg = -45  # Tilt from horizontal
+tilt_angle_deg = -40  # Tilt from horizontal
 height = 0.0575  # 5 cm in meters
 
 # Rotation matrix (tilt around X-axis)
