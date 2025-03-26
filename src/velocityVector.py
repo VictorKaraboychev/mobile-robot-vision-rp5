@@ -168,7 +168,7 @@ def get_trajectory_vector(image):
 
         # Visualize the path and trajectory vector on the frame
         cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, (cx,cy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
+        cv2.line(image, (cx,cy), (fx, fy), (0, 255, 0), 2)  # Trajectory vector
         cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
         return cx, cy, fx, fy
