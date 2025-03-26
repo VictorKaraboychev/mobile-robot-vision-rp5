@@ -1,3 +1,4 @@
+import math
 from time import sleep
 from smbus2 import SMBus
 import struct
@@ -50,7 +51,8 @@ class I2CComms:
             self.write_block(5, [1,2,3,4,5])
 
 
-# i2c = I2CComms(1, 0x08)
+i2c = I2CComms(1, 0x08)
+i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
 
 # # i2c.write_block([0x69, True, 4.20], "=B?f")
 # input("Press Enter to continue...")
