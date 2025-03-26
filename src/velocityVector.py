@@ -46,7 +46,7 @@ K = np.array([[fx, 0, cx],
             [0, 0, 1]], dtype=np.float32)
 
 # Extrinsic parameters
-tilt_angle_deg = -40  # Tilt from horizontal
+tilt_angle_deg = -30  # Tilt from horizontal
 height = 0.1025  # 5 cm in meters
 
 # Rotation matrix (tilt around X-axis)
@@ -188,6 +188,8 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
+    direction = True
+    
     i2c.write_block(0x05, [Event['Enable']], "=B") #ready to start
     # input("potato:")
     while True:
@@ -211,7 +213,6 @@ def main():
         
         sleep(0.01)
         
-        direction = True
         if state[0] == State['Disabled']:
             print(f"End Code")
             break
