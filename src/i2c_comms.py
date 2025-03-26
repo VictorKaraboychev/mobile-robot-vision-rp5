@@ -111,4 +111,4 @@ with open("sensor_data.txt", "a") as file:
         
         print(data)
         
-        sleep(0.01)
+        sleep(0.5)
