@@ -130,8 +130,8 @@ def get_trajectory_vector(image):
         largest_contour = max(contours_red, key=cv2.contourArea)
 
         # Calculate trajectory vector (dx, dy)
-        dx = 0
-        dy = 0
+        cx = 0
+        cy = 0
         # Calculate the center of the largest contour
         moments = cv2.moments(largest_contour)
         if moments['m00'] > 0:
@@ -141,44 +141,37 @@ def get_trajectory_vector(image):
             # Get the bottom center of the frame (robot's perspective origin)
             height, width, _ = image.shape
             bottom_center = (width // 2, height)
-
-            
-            # Calculate trajectory vector (dx, dy)
-            dx = cx
-            dy = cy
             
             # Visualize the path and trajectory vector on the frame
             
-        cv2.circle(image, (dx, dy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, bottom_center, (dx, dy), (255, 0, 0), 2)  # Trajectory vector
+        cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
+        cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
         cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
         
-        return dx, dy
+        # return dx, dy
 
+        # Get the bottom center of the frame (robot's perspective origin)
+        height, width, _ = image.shape
+        bottom_center = (width // 2, height)
+        bc_x, bc_y = bottom_center
+
+        # Reshape contour points to a 2D array of (x, y) coordinates
+        contour_points = largest_contour.reshape(-1, 2)
         
+        if contour_points.size == 0:
+            return None  # No points in the contour
 
-        # # Get the bottom center of the frame (robot's perspective origin)
-        # height, width, _ = image.shape
-        # bottom_center = (width // 2, height)
-        # bc_x, bc_y = bottom_center
+        # Calculate squared distances from bottom_center to all contour points
+        distances_sq = (contour_points[:, 0] - bc_x)**2 + (contour_points[:, 1] - bc_y)**2
+        farthest_idx = np.argmax(distances_sq)
+        fx, fy = contour_points[farthest_idx]
 
-        # # Reshape contour points to a 2D array of (x, y) coordinates
-        # contour_points = largest_contour.reshape(-1, 2)
-        
-        # if contour_points.size == 0:
-        #     return None  # No points in the contour
+        # Visualize the path and trajectory vector on the frame
+        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
+        cv2.line(image, (cx,cy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
+        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-        # # Calculate squared distances from bottom_center to all contour points
-        # distances_sq = (contour_points[:, 0] - bc_x)**2 + (contour_points[:, 1] - bc_y)**2
-        # farthest_idx = np.argmax(distances_sq)
-        # fx, fy = contour_points[farthest_idx]
-
-        # # Visualize the path and trajectory vector on the frame
-        # cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
-        # cv2.line(image, (dx,dy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
-        # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
-
-        # return fx, fy
+        return cx, cy, fx, fy
 
     return None  # Return None if no path is detected
 
@@ -222,31 +215,32 @@ def main():
             print("Arrived ")
             i2c.write_block(0x05, [Event['Pickup']], '=B')
         elif trajectory:
-            dx, dy = trajectory
-            gp = find_real_world_coordinates(dx, dy)
+            cx, cy, fx, fy = trajectory
+            cp = find_real_world_coordinates(cx, cy)
+            fp = find_real_world_coordinates(fx, fy)
 
-            dist_x, dist_y = gp - REF
+            dist_x, dist_y = cp - REF
+            look_x, look_y = fp - cp
+            look_angle = math.atan2(look_y, look_x)
             
-            angle = math.atan2(dist_x, dist_y)
-            
-            if angle > 0 : 
+            if look_x + 0.018 > 0:
                 direction = True
             else:
                 direction = False
             
-            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={angle} rad")
+            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
             
-            i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
+            i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
         else:
-            print(f"No path detected: dx={0}, dy={0}, angle={0} rad")
-            dy = 0.001
-            if direction:
-                dx = 0.1
-            else:
-                dx = -0.1
+            print(f"No path detected")
+            # dy = 0.001
+            # if direction:
+            #     dx = 0.1
+            # else:
+            #     dx = -0.1
                 
-            angle = math.atan2(dx, dy)
-            i2c.write_block(0x10, [dx, dy, angle], '=fff')
+            # angle = math.
+            # i2c.write_block(0x10, [dx, dy, angle], '=fff')
             # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
