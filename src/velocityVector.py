@@ -252,7 +252,7 @@ def main():
         
             print(data)
         
-            sleep(0.5)
+            # sleep(0.5)
 
     cap.release()
     cv2.destroyAllWindows()
