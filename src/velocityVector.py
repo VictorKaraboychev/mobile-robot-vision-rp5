@@ -243,7 +243,7 @@ def main():
         
             data = struct.unpack("=fff", bytes(val))
         
-            file.write(data + "\n")
+            file.write(data.__str__ + "\n")
             file.flush()
         
             print(data)
