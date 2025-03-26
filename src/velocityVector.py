@@ -210,6 +210,7 @@ def main():
         state = i2c.read_block(0x85, 1)
         sleep(0.01)
         if state[0] == State['Disabled']:
+            print(f"End Code")
             break
         if state[0] != State['Enabled']:
             continue
