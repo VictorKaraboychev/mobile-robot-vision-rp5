@@ -53,14 +53,14 @@ class I2CComms:
 
 # i2c = I2CComms(1, 0x08)
 
-Event = dict(
-    No_Event = int(0),
-    Enable = int(1),
-    Disable = int(2),
-    Pickup = int(3),
-    Dropoff = int(4),
-    Loading = int(5)
-)
+# Event = dict(
+#     No_Event = int(0),
+#     Enable = int(1),
+#     Disable = int(2),
+#     Pickup = int(3),
+#     Dropoff = int(4),
+#     Loading = int(5)
+# )
 
 
 # i2c.write_block(0x05, [1], "=?") #ready to start
