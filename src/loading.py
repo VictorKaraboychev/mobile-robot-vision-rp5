@@ -12,16 +12,19 @@ Event = dict(
     Loading = int(5)
 )
 
+while(True):
+    
+    option = input("Pick: loading, enable, disable, pickup, dropoff ----- ")
 
-option = input("loading, enable, disable, pickup, dropoff")
-
-if option == "loading":
-    i2c.write_block(0x05, [Event["Loading"]], '=B')
-elif option == "enable":
-    i2c.write_block(0x05, [Event["Enable"]], '=B')
-elif option == "disable":
-    i2c.write_block(0x05, [Event["Disable"]], '=B')
-elif option == "pickup":
-    i2c.write_block(0x05, [Event["Pickup"]], '=B')
-elif option == "dropoff":
-    i2c.write_block(0x05, [Event["Dropoff"]], '=B')
+    if option == "loading":
+        i2c.write_block(0x05, [Event["Loading"]], '=B')
+    elif option == "enable":
+        i2c.write_block(0x05, [Event["Enable"]], '=B')
+    elif option == "disable":
+        i2c.write_block(0x05, [Event["Disable"]], '=B')
+    elif option == "pickup":
+        i2c.write_block(0x05, [Event["Pickup"]], '=B')
+    elif option == "dropoff":
+        i2c.write_block(0x05, [Event["Dropoff"]], '=B')
+    else:
+        break
