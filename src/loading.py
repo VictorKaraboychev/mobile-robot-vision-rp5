@@ -13,5 +13,7 @@ Event = dict(
 )
 
 
-input("enter to continue")
+input("enter to load")
 i2c.write_block(0x05, [Event["Loading"]], '=B')
+input("enter to disable")
+i2c.write_block(0x05, [Event["Disable"]], '=B')
