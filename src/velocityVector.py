@@ -225,7 +225,7 @@ def main():
             look_x, look_y = fp - cp
             look_angle = math.atan2(look_y, look_x)
             
-            if look_x + 0.018 > 0:
+            if look_x - dist_x > 0:
                 direction = True
             else:
                 direction = False
@@ -243,7 +243,7 @@ def main():
             #     angle = math.pi/2
 
             # i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
-            i2c.write_block(0x02)
+            i2c.write_block(0x02, [direction], '=B')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
