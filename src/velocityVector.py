@@ -213,8 +213,8 @@ def main():
             continue
         elif trajectory == True:
             print("Arrived ")
-            i2c.write_block(0x05, [Event['Pickup']], '=B')
             input("enter to continue")
+            i2c.write_block(0x05, [Event['Pickup']], '=B')
         elif trajectory:
             cx, cy, fx, fy = trajectory
             cp = find_real_world_coordinates(cx, cy)
@@ -231,7 +231,7 @@ def main():
             
             print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
             
-            # i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
+            i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
         else:
             print(f"No path detected")
             # dy = 0
