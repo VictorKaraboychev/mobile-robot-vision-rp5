@@ -121,9 +121,10 @@ def get_trajectory_vector(image):
     # Find contours in the mask
     contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    if blue_count > image_height*image_width*0.25:
+    if blue_count > image_height*image_width*0.15:
         print(blue_count)
-        sleep(10000)
+        # sleep(10000)
+        return True
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
@@ -213,6 +214,7 @@ def main():
         elif trajectory == True:
             print("Arrived ")
             i2c.write_block(0x05, [Event['Pickup']], '=B')
+            input("enter to continue")
         elif trajectory:
             cx, cy, fx, fy = trajectory
             cp = find_real_world_coordinates(cx, cy)
