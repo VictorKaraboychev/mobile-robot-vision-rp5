@@ -119,9 +119,9 @@ def get_trajectory_vector(image):
     contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Find contours in the mask
-    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    if blue_count > image_height*image_width*0.15:
+    if blue_count > image_height*image_width*0.10:
         print(blue_count)
         # sleep(10000)
         return True
@@ -231,7 +231,7 @@ def main():
             
             print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
             
-            i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
+            # i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
         else:
             print(f"No path detected")
             # dy = 0
