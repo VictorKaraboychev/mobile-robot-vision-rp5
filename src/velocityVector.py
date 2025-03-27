@@ -94,15 +94,19 @@ def get_trajectory_vector(image):
     upper_red2 = np.array([180, 255, 255])
     
     # Define the HSV range for detecting blue color
-    lower_blue1 = np.array([120, 50, 20])
-    upper_blue1 = np.array([255, 150, 80])
+    # lower_blue1 = np.array([120, 50, 20])
+    # upper_blue1 = np.array([255, 50, 80])
+    
+    lower_blue1 = np.array([100, 150, 50])
+    upper_blue1 = np.array([130, 255, 255])
+    
 
     # Create masks for the red color range
     mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask_red = cv2.bitwise_or(mask_r1, mask_r2)
     
-    mask_blue = cv2.inRange(image, lower_blue1, upper_blue1)
+    mask_blue = cv2.inRange(hsv, lower_blue1, upper_blue1)
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
@@ -214,8 +218,8 @@ def main():
         elif trajectory == True:
             print("Arrived ")
             # input("enter to continue")
-            i2c.write_block(0x05, [Event['Pickup']], '=B')
-            sleep(100)
+            # i2c.write_block(0x05, [Event['Pickup']], '=B')
+            sleep(0.100)
         elif trajectory:
             cx, cy, fx, fy = trajectory
             cp = find_real_world_coordinates(cx, cy)
@@ -230,9 +234,9 @@ def main():
             else:
                 direction = False
             
-            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
+            # print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
             
-            i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
+            # i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
         else:
             print(f"No path detected")
             # dy = 0
@@ -243,7 +247,7 @@ def main():
             #     angle = math.pi/2
 
             # i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
-            # i2c.write_block(0x02, [direction], '=B')
+            i2c.write_block(0x02, [direction], '=B')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
