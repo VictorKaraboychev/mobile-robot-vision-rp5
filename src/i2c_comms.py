@@ -58,7 +58,7 @@ Event = dict(
     Enable = int(1),
     Disable = int(2),
     Pickup = int(3),
-    Dropoff = int(4)
+    Dropoff = int(4),
     Loading = int(5)
 )
 
