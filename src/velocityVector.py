@@ -243,7 +243,7 @@ def main():
             #     angle = math.pi/2
 
             # i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
-            i2c.write_block(0x02, [direction], '=B')
+            # i2c.write_block(0x02, [direction], '=B')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
