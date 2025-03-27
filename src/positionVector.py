@@ -1,3 +1,4 @@
+import json
 import struct
 import cv2
 import numpy as np
@@ -17,7 +18,7 @@ State = dict(
 Event = dict(
     No_Event = int(0),
     Enable = int(1),
-    Diable = int(2),
+    Disable = int(2),
     Pickup = int(3),
     Dropoff = int(4)
 )
@@ -45,8 +46,8 @@ K = np.array([[fx, 0, cx],
             [0, 0, 1]], dtype=np.float32)
 
 # Extrinsic parameters
-tilt_angle_deg = -40  # Tilt from horizontal
-height = 0.01025  # 5 cm in meters
+tilt_angle_deg = -30  # Tilt from horizontal
+height = 0.1025  # 5 cm in meters
 
 # Rotation matrix (tilt around X-axis)
 theta = np.radians(tilt_angle_deg)
@@ -93,62 +94,89 @@ def get_trajectory_vector(image):
     upper_red2 = np.array([180, 255, 255])
     
     # Define the HSV range for detecting blue color
-    lower_blue1 = np.array([100, 150, 50])
-    upper_blue1 = np.array([120, 255, 255])
-    lower_blue2 = np.array([120, 150, 50])
-    upper_blue2 = np.array([140, 255, 255])
+    lower_blue1 = np.array([120, 50, 20])
+    upper_blue1 = np.array([255, 150, 80])
 
     # Create masks for the red color range
     mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask_red = cv2.bitwise_or(mask_r1, mask_r2)
     
-    mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
-    mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
-    mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
+    mask_blue = cv2.inRange(image, lower_blue1, upper_blue1)
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
     mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_OPEN, kernel)
     mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_CLOSE, kernel)
     
-    # Apply morphological operations to clean up the mask
-    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
-    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
+    blue_count = cv2.countNonZero(mask_blue)
+    
+    # # Apply morphological operations to clean up the mask
+    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
+    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
 
     # Find contours in the mask
     contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Find contours in the mask
-    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    # if contours_blue:
-    #     return True
+    if blue_count > image_height*image_width*0.10:
+        print(blue_count)
+        # sleep(10000)
+        return True
     if contours_red:
+        # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
 
-        # Get the bottom center of the frame (robot's perspective origin)
-        height, width, _ = image.shape
-        bottom_center = (width // 2, height)
-        bc_x, bc_y = bottom_center
+        # Calculate trajectory vector (dx, dy)
+        cx = 0
+        cy = 0
+        # Calculate the center of the largest contour
+        moments = cv2.moments(largest_contour)
+        if moments['m00'] > 0:
+            cx = int(moments['m10'] / moments['m00'])
+            cy = int(moments['m01'] / moments['m00'])
 
-        # Reshape contour points to a 2D array of (x, y) coordinates
-        contour_points = largest_contour.reshape(-1, 2)
-        
-        if contour_points.size == 0:
-            return None  # No points in the contour
-
-        # Calculate squared distances from bottom_center to all contour points
-        distances_sq = (contour_points[:, 0] - bc_x)**2 + (contour_points[:, 1] - bc_y)**2
-        farthest_idx = np.argmax(distances_sq)
-        fx, fy = contour_points[farthest_idx]
-
-        # Visualize the path and trajectory vector on the frame
-        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, bottom_center, (fx, fy), (255, 0, 0), 2)  # Trajectory vector
+            # Get the bottom center of the frame (robot's perspective origin)
+            height, width, _ = image.shape
+            bottom_center = (width // 2, height)
+            
+            # Visualize the path and trajectory vector on the frame
+            
+        cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
+        cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
         cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+        
+        contour_points = largest_contour.reshape(-1, 2)
+    
+        if contour_points.size == 0:
+            return None
 
-        return fx, fy
+        # Find key points
+        northernmost = contour_points[np.argmin(contour_points[:, 1])]  # Point with smallest Y
+        leftmost = contour_points[np.argmin(contour_points[:, 0])]      # Point with smallest X
+        rightmost = contour_points[np.argmax(contour_points[:, 0])]     # Point with largest X
+
+        # Calculate horizontal distances from northernmost
+        left_distance = northernmost[0] - leftmost[0]
+        right_distance = rightmost[0] - northernmost[0]
+
+        # Choose the more extreme lateral point
+        if right_distance > left_distance:
+            lateral_point = rightmost
+        else:
+            lateral_point = leftmost
+
+        # Calculate midpoint between northernmost and lateral point
+        fx = (northernmost[0] + lateral_point[0]) // 2
+        fy = (northernmost[1] + lateral_point[1]) // 2
+
+        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
+        cv2.line(image, (cx, cy), (fx, fy), (255, 0, 0), 2)  # Trajectory vector
+        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)
+
+        return cx, cy, fx, fy
 
     return None  # Return None if no path is detected
 
@@ -158,8 +186,10 @@ def main():
     cap = cv2.VideoCapture(0)  # Change to the appropriate camera index if needed
     i2c = I2CComms(1, 0x08)
     
+    direction = True
+    
     i2c.write_block(0x05, [Event['Enable']], "=B") #ready to start
-    input("potato:")
+    # input("potato:")
     while True:
         result = i2c.read_block(0x85, 1)
         if result[0] == State['Enabled']:
@@ -177,44 +207,48 @@ def main():
         # Get trajectory vector
         trajectory = get_trajectory_vector(frame)
         
-        direction = True # True = Right, False = Left
-        
         state = i2c.read_block(0x85, 1)
+        
         sleep(0.01)
+        
         if state[0] == State['Disabled']:
+            print(f"Disabled")
             break
         if state[0] != State['Enabled']:
-            continue
+            print(f"Not Enabled")
         elif trajectory == True:
             print("Arrived ")
+            # input("enter to continue")
             i2c.write_block(0x05, [Event['Pickup']], '=B')
+            sleep(0.100)
         elif trajectory:
-            dx, dy = trajectory
-            gp = find_real_world_coordinates(dx, dy)
+            cx, cy, fx, fy = trajectory
+            cp = find_real_world_coordinates(cx, cy)
+            fp = find_real_world_coordinates(fx, fy)
 
-            dist_x, dist_y = gp - REF
+            dist_x, dist_y = cp - REF
+            look_x, look_y = fp - cp
+            look_angle = math.atan2(look_y, look_x)
             
-            angle = math.atan2(dist_x, dist_y)
-            
-            if angle > 0 : 
+            if look_x + 0.018 > 0:
                 direction = True
             else:
                 direction = False
             
-            print(f"Trajectory Vector: dx={dist_x}, dy={dist_y}, angle={angle} degrees")
+            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
             
-            i2c.write_block(0x10, [dist_x, dist_y, angle], '=fff')
+            i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
         else:
             print(f"No path detected")
-            # dy = 0.001
+            # dy = 0
+            # dx = 0
             # if direction:
-            #     dx = 0.1
+            #     angle = 0
             # else:
-            #     dx = -0.1
-                
-            # angle = math.atan2(dx, dy)
-            # i2c.write_block(0x10, [dx, dy, angle], '=fff')
-            i2c.write_block(0x02, [0, 0, 0], '=hhh')
+            #     angle = math.pi/2
+
+            # i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
+            # i2c.write_block(0x02, [0, 0, 0], '=hhh')
 
         # Show the processed frame
         cv2.imshow('Frame', frame)
@@ -222,21 +256,27 @@ def main():
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-        sleep(0.01)
+        # sleep(0.01)
+        
+        with open("sensor_data.json", "a") as file:
+            val = i2c.read_block(0x81, 12)
+        
+            data = struct.unpack("=fff", bytes(val))
+
+            json_data = json.dumps({"floats": data})
+            
+            file.write(json_data)
+            file.write("\n")
+            file.flush()
+        
+            print(data)
+        
+            # sleep(0.5)
 
     cap.release()
     cv2.destroyAllWindows()
-    with open("sensor_data.txt", "a") as file:
-        val = i2c.read_block(0x81, 12)
     
-        data = struct.unpack("=fff", bytes(val))
     
-        file.write(data + "\n")
-        file.flush()
-    
-        print(data)
-    
-        sleep(0.5)
 
 if __name__ == "__main__":
     main()
