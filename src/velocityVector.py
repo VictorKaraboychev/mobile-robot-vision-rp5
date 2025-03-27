@@ -207,14 +207,15 @@ def main():
         sleep(0.01)
         
         if state[0] == State['Disabled']:
-            print(f"End Code")
+            print(f"Disabled")
             break
         if state[0] != State['Enabled']:
-            continue
+            print(f"Not Enabled")
         elif trajectory == True:
             print("Arrived ")
-            input("enter to continue")
+            # input("enter to continue")
             i2c.write_block(0x05, [Event['Pickup']], '=B')
+            sleep(100)
         elif trajectory:
             cx, cy, fx, fy = trajectory
             cp = find_real_world_coordinates(cx, cy)
