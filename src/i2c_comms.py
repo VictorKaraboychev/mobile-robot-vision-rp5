@@ -59,9 +59,9 @@ i2c = I2CComms(1, 0x08)
 # # i2c.write_block([0x69, True, 4.20], "=B?f")
 input("Press Enter to continue...")
 i2c.write_block(0x05, [1], "=B") #ready to start
-# input("enter to continue")
+input("enter to continue")
 i2c.write_block(0x05, [3], '=B')
-# input("enter to continue")
+input("enter to continue")
 i2c.write_block(0x05, [2], '=B')
 
 # while True:
