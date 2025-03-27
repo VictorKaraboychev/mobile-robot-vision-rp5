@@ -273,10 +273,10 @@ def main():
             else:
                 direction = False
             
-            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
+            print(f"Blue Mode")
             
             i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
-            sleep(2)
+            sleep(100000)
             i2c.write_block(0x05, [Event['Pickup']], '=B')
         elif Arrived == False:
             cp = find_real_world_coordinates(cx, cy)
