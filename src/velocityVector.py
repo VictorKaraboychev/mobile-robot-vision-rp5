@@ -96,17 +96,15 @@ def get_trajectory_vector(image):
     # Define the HSV range for detecting blue color
     lower_blue1 = np.array([100, 150, 50])
     upper_blue1 = np.array([120, 255, 255])
-    lower_blue2 = np.array([120, 150, 50])
-    upper_blue2 = np.array([140, 255, 255])
+    
 
     # Create masks for the red color range
     mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask_red = cv2.bitwise_or(mask_r1, mask_r2)
     
-    mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
-    mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
-    mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
+    mask_blue = cv2.inRange(hsv, lower_blue1, upper_blue1)
+    
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
