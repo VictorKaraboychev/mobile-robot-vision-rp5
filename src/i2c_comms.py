@@ -52,17 +52,28 @@ class I2CComms:
 
 
 i2c = I2CComms(1, 0x08)
+
+Event = dict(
+    No_Event = int(0),
+    Enable = int(1),
+    Disable = int(2),
+    Pickup = int(3),
+    Dropoff = int(4)
+    Loading = int(5)
+)
+
+
 # i2c.write_block(0x05, [1], "=?") #ready to start
 # input("Press Enter to continue...")
 # i2c.write_block(0x10, [-0.018, -0.1225, 0], '=fff')
 
 # # i2c.write_block([0x69, True, 4.20], "=B?f")
-# input("Press Enter to continue...")
-# i2c.write_block(0x05, [1], "=B") #ready to start
-# input("enter to continue")
-# i2c.write_block(0x05, [3], '=B')
-# input("enter to continue")
-# i2c.write_block(0x05, [2], '=B')
+input("Press Enter to continue...")
+i2c.write_block(0x05, [Event["Enable"]], "=B") #ready to start
+input("enter to continue")
+i2c.write_block(0x05, [Event["Loading"]], '=B')
+input("enter to continue")
+i2c.write_block(0x05, [Event["Disable"]], '=B')
 
 # while True:
 #     result = i2c.read_block(0x85, 1)
