@@ -94,37 +94,35 @@ def get_trajectory_vector(image):
     upper_red2 = np.array([180, 255, 255])
     
     # Define the HSV range for detecting blue color
-    lower_blue1 = np.array([100, 150, 50])
-    upper_blue1 = np.array([120, 255, 255])
-    lower_blue2 = np.array([120, 150, 50])
-    upper_blue2 = np.array([140, 255, 255])
+    lower_blue1 = np.array([120, 50, 20])
+    upper_blue1 = np.array([255, 150, 80])
 
     # Create masks for the red color range
     mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask_red = cv2.bitwise_or(mask_r1, mask_r2)
     
-    mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
-    mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
-    mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
+    mask_blue = cv2.inRange(image, lower_blue1, upper_blue1)
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
     mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_OPEN, kernel)
     mask_red = cv2.morphologyEx(mask_red, cv2.MORPH_CLOSE, kernel)
     
-    # Apply morphological operations to clean up the mask
-    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
-    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
+    blue_count = cv2.countNonZero(mask_blue)
+    
+    # # Apply morphological operations to clean up the mask
+    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
+    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
 
     # Find contours in the mask
     contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Find contours in the mask
-    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    # if contours_blue:
-    #     return True
+    if blue_count:
+        print("I like ot move it move it")
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
