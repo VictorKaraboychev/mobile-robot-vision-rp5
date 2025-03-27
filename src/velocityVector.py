@@ -94,20 +94,19 @@ def get_trajectory_vector(image):
     upper_red2 = np.array([180, 255, 255])
     
     # Define the HSV range for detecting blue color
-    # lower_blue1 = np.array([100, 150, 50])
-    # upper_blue1 = np.array([120, 255, 255])
-    
-    lower_blue1 = np.array([120, 50, 20])
-    upper_blue1 = np.array([255,150,80])
-    
+    lower_blue1 = np.array([100, 150, 50])
+    upper_blue1 = np.array([120, 255, 255])
+    lower_blue2 = np.array([120, 150, 50])
+    upper_blue2 = np.array([140, 255, 255])
 
     # Create masks for the red color range
     mask_r1 = cv2.inRange(hsv, lower_red1, upper_red1)
     mask_r2 = cv2.inRange(hsv, lower_red2, upper_red2)
     mask_red = cv2.bitwise_or(mask_r1, mask_r2)
     
-    mask_blue = cv2.inRange(image, lower_blue1, upper_blue1)
-    
+    mask_b1 = cv2.inRange(hsv, lower_blue1, upper_blue1)
+    mask_b2 = cv2.inRange(hsv, lower_blue2, upper_blue2)
+    mask_blue = cv2.bitwise_or(mask_b1, mask_b2)
 
     # Apply morphological operations to clean up the mask
     kernel = np.ones((5, 5), np.uint8)
@@ -124,52 +123,8 @@ def get_trajectory_vector(image):
     # Find contours in the mask
     contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    if contours_blue:
-        # Find the largest contour (assumed to be the red path)
-        largest_contour = max(contours_blue, key=cv2.contourArea)
-        # Calculate trajectory vector (dx, dy)
-        cx = 0
-        cy = 0
-        # Calculate the center of the largest contour
-        moments = cv2.moments(largest_contour)
-        if moments['m00'] > 0:
-            cx = int(moments['m10'] / moments['m00'])
-            cy = int(moments['m01'] / moments['m00'])
-
-            # Get the bottom center of the frame (robot's perspective origin)
-            height, width, _ = image.shape
-            bottom_center = (width // 2, height)
-            
-            # Visualize the path and trajectory vector on the frame
-            
-        cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
-        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
-        
-        
-        # Find the largest contour (assumed to be the red path)
-        largest_contour = max(contours_blue, key=cv2.contourArea)
-
-        # Calculate trajectory vector (dx, dy)
-        fx = 0
-        fy = 0
-        # Calculate the center of the largest contour
-        moments = cv2.moments(largest_contour)
-        if moments['m00'] > 0:
-            fx = int(moments['m10'] / moments['m00'])
-            fy = int(moments['m01'] / moments['m00'])
-
-            # Get the bottom center of the frame (robot's perspective origin)
-            height, width, _ = image.shape
-            bottom_center = (width // 2, height)
-            
-            # Visualize the path and trajectory vector on the frame
-            
-        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, (cx,cy), (fx, fy), (0, 255, 0), 2)  # Trajectory vector
-        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
-        
-        return True, cx, cy, fx, fy
+    # if contours_blue:
+    #     return True
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
@@ -216,7 +171,7 @@ def get_trajectory_vector(image):
         cv2.line(image, (cx,cy), (fx, fy), (0, 255, 0), 2)  # Trajectory vector
         cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-        return False, cx, cy, fx, fy
+        return cx, cy, fx, fy
 
     return None  # Return None if no path is detected
 
@@ -245,11 +200,7 @@ def main():
         frame = cv2.resize(frame, (640, 480))
 
         # Get trajectory vector
-        trajectory_vector = get_trajectory_vector(frame)
-        
-        if trajectory_vector:
-            Arrived, cx, cy, fx, fx = get_trajectory_vector(frame)
-            
+        trajectory = get_trajectory_vector(frame)
         
         state = i2c.read_block(0x85, 1)
         
@@ -260,25 +211,11 @@ def main():
             break
         if state[0] != State['Enabled']:
             continue
-        elif Arrived == True:
+        elif trajectory == True:
             print("Arrived ")
-            cp = find_real_world_coordinates(cx, cy)
-            fp = find_real_world_coordinates(fx, fy)
-            dist_x, dist_y = cp - REF
-            look_x, look_y = fp - cp
-            look_angle = math.atan2(look_y, look_x)
-            
-            if look_x + 0.018 > 0:
-                direction = True
-            else:
-                direction = False
-            
-            print(f"Blue Mode")
-            
-            i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
-            sleep(100000)
             i2c.write_block(0x05, [Event['Pickup']], '=B')
-        elif Arrived == False:
+        elif trajectory:
+            cx, cy, fx, fy = trajectory
             cp = find_real_world_coordinates(cx, cy)
             fp = find_real_world_coordinates(fx, fy)
 
