@@ -116,19 +116,32 @@ def get_trajectory_vector(image):
     blue_count = cv2.countNonZero(mask_blue)
     
     # # Apply morphological operations to clean up the mask
-    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
-    # mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
+    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_OPEN, kernel)
+    mask_blue = cv2.morphologyEx(mask_blue, cv2.MORPH_CLOSE, kernel)
 
     # Find contours in the mask
     contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     # Find contours in the mask
-    # contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     if blue_count > image_height*image_width*0.10:
         print(blue_count)
         # sleep(10000)
-        return True
+        # Find the largest contour (assumed to be the red path)
+        largest_contour = max(contours_blue, key=cv2.contourArea)
+
+        # Calculate trajectory vector (dx, dy)
+        cx = 0
+        cy = 0
+        # Calculate the center of the largest contour
+        moments = cv2.moments(largest_contour)
+        if moments['m00'] > 0:
+            cx = int(moments['m10'] / moments['m00'])
+            cy = int(moments['m01'] / moments['m00'])
+            
+            # Visualize the path and trajectory vector on the frame
+        return True, cx, cy
     if contours_red:
         # Find the largest contour (assumed to be the red path)
         largest_contour = max(contours_red, key=cv2.contourArea)
@@ -175,7 +188,7 @@ def get_trajectory_vector(image):
         # cv2.line(image, (cx,cy), (fx, fy), (0, 255, 0), 2)  # Trajectory vector
         # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
-        return cx, cy, fx, fy
+        return False, cx, cy, fx, fy
 
     return None  # Return None if no path is detected
 
@@ -215,13 +228,21 @@ def main():
             break
         if state[0] != State['Enabled']:
             print(f"Not Enabled")
-        elif trajectory == True:
+        elif trajectory[0] == True:
             print("Arrived ")
+            cx = trajectory[1]
+            cy = trajectory[2]
+            cp = find_real_world_coordinates(cx, cy)
+            dist_x, dist_y = cp - REF
             # input("enter to continue")
-            i2c.write_block(0x05, [Event['Pickup']], '=B')
+            i2c.write_block(0x05, [Event['Pickup'], dist_x, dist_y], '=Bff')
             # sleep(15)
-        elif trajectory:
-            cx, cy, fx, fy = trajectory
+        elif trajectory[0] == False:
+            cx = trajectory[1]
+            cy = trajectory[2]
+            fx = trajectory[3]
+            fy = trajectory[4]
+
             cp = find_real_world_coordinates(cx, cy)
             fp = find_real_world_coordinates(fx, fy)
 
