@@ -47,12 +47,12 @@ def main():
         
         sleep(0.01)
         
-        if state[0] == State['Disabled']:
-            print(f"Disabled")
-            break
-        if state[0] != State['Enabled']:
-            print(f"Not Enabled")
-            continue
+        # if state[0] == State['Disabled']:
+        #     print(f"Disabled")
+        #     break
+        # if state[0] != State['Enabled']:
+        #     print(f"Not Enabled")
+        #     continue
         
         
         if keyboard.is_pressed('w'):
