@@ -80,10 +80,6 @@ def main():
         elif direction != None:
             i2c.write_block(0x02, [direction], '=B')
 
-        # Break loop on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
     
     
 
