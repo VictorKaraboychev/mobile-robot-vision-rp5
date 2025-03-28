@@ -228,7 +228,7 @@ def main():
             break
         if state[0] != State['Enabled']:
             print(f"Not Enabled")
-        elif trajectory:
+        elif trajectory == None:
             print(f"No path detected")
             # dy = 0
             # dx = 0
