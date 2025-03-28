@@ -57,13 +57,13 @@ def main():
         
         
         if keyboard.is_pressed('w'):
-            destination_Y += 0.01
+            destination_Y += 0.001
         if keyboard.is_pressed('a'):
-            destination_X -= 0.01
+            destination_X -= 0.001
         if keyboard.is_pressed('s'):
-            destination_Y -= 0.01
+            destination_Y -= 0.001
         if keyboard.is_pressed('d'):
-            destination_X += 0.01
+            destination_X += 0.001
         if keyboard.is_pressed('q'):
             direction = False
         elif keyboard.is_pressed('e'):
