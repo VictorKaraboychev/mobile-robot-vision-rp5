@@ -228,6 +228,17 @@ def main():
             break
         if state[0] != State['Enabled']:
             print(f"Not Enabled")
+        elif trajectory:
+            print(f"No path detected")
+            # dy = 0
+            # dx = 0
+            # if direction:
+            #     angle = 0
+            # else:
+            #     angle = math.pi/2
+
+            # i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
+            i2c.write_block(0x02, [direction], '=B')
         elif trajectory[0] == True:
             print("Arrived ")
             cx = trajectory[1]
@@ -258,17 +269,6 @@ def main():
             print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m, angle={look_angle} rad")
             
             i2c.write_block(0x10, [dist_x, dist_y, look_angle], '=fff')
-        else:
-            print(f"No path detected")
-            # dy = 0
-            # dx = 0
-            # if direction:
-            #     angle = 0
-            # else:
-            #     angle = math.pi/2
-
-            # i2c.write_block(0x10, [0, 0, math.pi/2], '=fff')
-            i2c.write_block(0x02, [direction], '=B')
 
         # Show the processed frame
         # cv2.imshow('Frame', frame)
