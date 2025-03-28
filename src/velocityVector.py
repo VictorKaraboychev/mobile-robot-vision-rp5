@@ -148,9 +148,9 @@ def get_trajectory_vector(image):
             
             # Visualize the path and trajectory vector on the frame
             
-        cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
-        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+        # cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Path center
+        # cv2.line(image, bottom_center, (cx, cy), (255, 0, 0), 2)  # Trajectory vector
+        # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
         
         # return dx, dy
 
@@ -170,10 +170,10 @@ def get_trajectory_vector(image):
         farthest_idx = np.argmax(distances_sq)
         fx, fy = contour_points[farthest_idx]
 
-        # Visualize the path and trajectory vector on the frame
-        cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
-        cv2.line(image, (cx,cy), (fx, fy), (0, 255, 0), 2)  # Trajectory vector
-        cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
+        # # Visualize the path and trajectory vector on the frame
+        # cv2.circle(image, (fx, fy), 5, (0, 255, 0), -1)  # Path center
+        # cv2.line(image, (cx,cy), (fx, fy), (0, 255, 0), 2)  # Trajectory vector
+        # cv2.drawContours(image, [largest_contour], -1, (0, 255, 255), 2)  # Path contour
 
         return cx, cy, fx, fy
 
@@ -250,7 +250,7 @@ def main():
             i2c.write_block(0x02, [direction], '=B')
 
         # Show the processed frame
-        cv2.imshow('Frame', frame)
+        # cv2.imshow('Frame', frame)
 
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -273,7 +273,7 @@ def main():
             # sleep(0.5)
 
     cap.release()
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
     
     
 
