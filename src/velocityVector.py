@@ -246,6 +246,7 @@ def main():
             cp = find_real_world_coordinates(cx, cy)
             dist_x, dist_y = cp - REF
             # input("enter to continue")
+            print(f"Trajectory Vector: dx={dist_x} m, dy={dist_y} m")
             i2c.write_block(0x05, [Event['Pickup'], dist_x, dist_y], '=Bff')
             # sleep(15)
         elif trajectory[0] == False:
