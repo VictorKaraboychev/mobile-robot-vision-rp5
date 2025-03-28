@@ -257,20 +257,20 @@ def main():
             break
         # sleep(0.01)
         
-        with open("sensor_data.json", "a") as file:
-            val = i2c.read_block(0x81, 12)
+        # with open("sensor_data.json", "a") as file:
+        #     val = i2c.read_block(0x81, 12)
         
-            data = struct.unpack("=fff", bytes(val))
+        #     data = struct.unpack("=fff", bytes(val))
 
-            json_data = json.dumps({"floats": data})
+        #     json_data = json.dumps({"floats": data})
             
-            file.write(json_data)
-            file.write("\n")
-            file.flush()
+        #     file.write(json_data)
+        #     file.write("\n")
+        #     file.flush()
         
-            print(data)
+        #     print(data)
         
-            # sleep(0.5)
+        #     # sleep(0.5)
 
     cap.release()
     # cv2.destroyAllWindows()
