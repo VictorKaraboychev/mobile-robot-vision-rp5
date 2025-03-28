@@ -219,7 +219,7 @@ def main():
             print("Arrived ")
             # input("enter to continue")
             i2c.write_block(0x05, [Event['Pickup']], '=B')
-            sleep(100)
+            sleep(15)
         elif trajectory:
             cx, cy, fx, fy = trajectory
             cp = find_real_world_coordinates(cx, cy)
