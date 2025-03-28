@@ -76,6 +76,7 @@ def main():
             break
         
         if direction == None:
+            looktowards_Angle = math.atan2(destination_X, destination_Y)
             i2c.write_block(0x10, [destination_X, destination_Y, looktowards_Angle], '=fff')
         elif direction != None:
             i2c.write_block(0x02, [direction], '=B')
